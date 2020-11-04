@@ -40,8 +40,8 @@ public class ShoppingCart {
             return "0";
         } else {
             sessionId = request.getHttpHeaders().getCookies().get(DBHelper.MOVIE_STORE).getValue();
-            if (DBHelper.getCart().containsKey(sessionId)) {
-                movieCart = DBHelper.getCart().get(sessionId);
+            if (DBHelper.getCartCache().containsKey(sessionId)) {
+                movieCart = DBHelper.getCartCache().get(sessionId);
             } else {
                 movieCart = new MovieCart();
                 movieCart.setOrderId(UUID.randomUUID().toString());
@@ -55,7 +55,7 @@ public class ShoppingCart {
                 movieItems.put(movieId, qty);
             }
 
-            DBHelper.getCart().put(sessionId, movieCart);
+            DBHelper.getCartCache().put(sessionId, movieCart);
             log.info("Movie Cart:{}", movieCart);
         }
 
@@ -71,10 +71,10 @@ public class ShoppingCart {
             log.warn("no session cookie - use the homepage");
         } else {
             String sessionId = request.getHttpHeaders().getCookies().get(DBHelper.MOVIE_STORE).getValue();
-            if (DBHelper.getCart().containsKey(sessionId)) {
-                MovieCart movieCart = DBHelper.getCart().get(sessionId);
+            if (DBHelper.getCartCache().containsKey(sessionId)) {
+                MovieCart movieCart = DBHelper.getCartCache().get(sessionId);
                 log.info("Your request {} will be processed, thank your for shopping", movieCart);
-                DBHelper.getCart().remove(sessionId);
+                DBHelper.getCartCache().remove(sessionId);
             }
         }
         return Response.seeOther(URI.create("/")).build();
