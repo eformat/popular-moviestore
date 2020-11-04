@@ -174,6 +174,14 @@ public class Movie implements Serializable {
         this.voteCount = voteCount;
     }
 
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                '}';
+    }
+
     // @see com.acme.moviestore.TestMovies
     public String dump() {
         return "movieList.add(new MovieCartItem(new Movie(\"" +
