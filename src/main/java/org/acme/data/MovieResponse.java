@@ -1,7 +1,6 @@
 package org.acme.data;
 
 import javax.json.bind.annotation.JsonbProperty;
-import java.io.Serializable;
 import java.util.Set;
 
 public class MovieResponse {

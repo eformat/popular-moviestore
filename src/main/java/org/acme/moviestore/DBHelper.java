@@ -12,9 +12,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
-import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.commons.configuration.XMLStringConfiguration;
-import org.infinispan.commons.marshall.JavaSerializationMarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

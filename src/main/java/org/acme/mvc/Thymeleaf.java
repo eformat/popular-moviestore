@@ -1,9 +1,7 @@
 package org.acme.mvc;
 
 import io.vertx.core.Vertx;
-import io.vertx.ext.web.Router;
 import io.vertx.ext.web.common.template.TemplateEngine;
-import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.templ.thymeleaf.ThymeleafTemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
