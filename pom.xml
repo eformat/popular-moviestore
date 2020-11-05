@@ -51,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-resteasy-jackson</artifactId>
+            <artifactId>quarkus-resteasy-jsonb</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -59,8 +59,7 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-infinispan-embedded</artifactId>
-            <version>1.6.1.Final</version>
+            <artifactId>quarkus-infinispan-client</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

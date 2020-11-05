@@ -1,11 +1,10 @@
 package org.acme.data;
 
-import com.fasterxml.jackson.annotation.JsonSetter;
-
+import javax.json.bind.annotation.JsonbProperty;
 import java.io.Serializable;
 import java.util.Set;
 
-public class MovieResponse implements Serializable {
+public class MovieResponse {
 
     public MovieResponse(Set<Movie> movieSet, int page, int totalPages, int totalResults) {
         this.movieSet = movieSet;
@@ -26,7 +25,7 @@ public class MovieResponse implements Serializable {
         return movieSet;
     }
 
-    @JsonSetter("results")
+    @JsonbProperty("results")
     public void setMovieSet(Set<Movie> movieSet) {
         this.movieSet = movieSet;
     }
@@ -43,7 +42,7 @@ public class MovieResponse implements Serializable {
         return totalPages;
     }
 
-    @JsonSetter("total_pages")
+    @JsonbProperty("total_pages")
     public void setTotalPages(int totalPages) {
         this.totalPages = totalPages;
     }
@@ -52,7 +51,7 @@ public class MovieResponse implements Serializable {
         return totalResults;
     }
 
-    @JsonSetter("total_results")
+    @JsonbProperty("total_results")
     public void setTotalResults(int totalResults) {
         this.totalResults = totalResults;
     }

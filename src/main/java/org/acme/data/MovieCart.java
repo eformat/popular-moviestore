@@ -1,13 +1,26 @@
 package org.acme.data;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.infinispan.protostream.annotations.ProtoFactory;
+import org.infinispan.protostream.annotations.ProtoField;
+
+import java.util.*;
 
 public class MovieCart {
     public String userId;
     public String orderId;
-    private Map<String, Integer> movieItems = new HashMap<>();
+    private List<MovieItem> movieItems = new ArrayList<>();
 
+    public MovieCart() {
+    }
+
+    @ProtoFactory
+    public MovieCart(String userId, String orderId, List<MovieItem> movieItems) {
+        this.userId = userId;
+        this.orderId = orderId;
+        this.movieItems = movieItems;
+    }
+
+    @ProtoField(number = 1)
     public String getUserId() {
         return userId;
     }
@@ -16,6 +29,7 @@ public class MovieCart {
         this.userId = userId;
     }
 
+    @ProtoField(number = 2)
     public String getOrderId() {
         return orderId;
     }
@@ -24,20 +38,27 @@ public class MovieCart {
         this.orderId = orderId;
     }
 
-    public Map<String, Integer> getMovieItems() {
+    @ProtoField(number = 3, collectionImplementation = ArrayList.class)
+    public List<MovieItem> getMovieItems() {
         return movieItems;
     }
 
-    public void setMovieItems(Map<String, Integer> movieItems) {
+    public void setMovieItems(List<MovieItem> movieItems) {
         this.movieItems = movieItems;
     }
 
     @Override
-    public String toString() {
-        return "MovieCart{" +
-                "userId='" + userId + '\'' +
-                ", orderId='" + orderId + '\'' +
-                ", movieItems=" + movieItems +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MovieCart movieCart = (MovieCart) o;
+        return Objects.equals(userId, movieCart.userId) &&
+                Objects.equals(orderId, movieCart.orderId) &&
+                Objects.equals(movieItems, movieCart.movieItems);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, orderId, movieItems);
     }
 }

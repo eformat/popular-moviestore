@@ -9,6 +9,15 @@
 export API_KEY=<your api key>
 ```
 
+Run infinispan cluster locally
+```bash
+podman-compose up -d
+
+# create a user
+podman exec -it ispn1 /opt/infinispan/bin/cli.sh user create admin -p admin
+podman exec -it ispn2 /opt/infinispan/bin/cli.sh user create admin -p admin
+```
+
 You can run your application in dev mode that enables live coding using:
 ```bash
 mvn quarkus:dev
@@ -25,3 +34,26 @@ It produces the `popular-moviestore-1.0-SNAPSHOT-runner.jar` file in the `/targe
 This is a hollow jar with the dependencies copied into the `target/lib` directory.
 
 The application is now runnable using `java -jar target/popular-moviestore-1.0-SNAPSHOT-runner.jar`.
+
+
+## Embedded infinispan cache during development
+
+You can use the embedded infinispan cache if you dont want to run your own external infinispan instance:
+
+```xml
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-infinispan-embedded</artifactId>
+            <version>1.6.1.Final</version>
+        </dependency>
+```
+
+```java
+    @Inject
+    EmbeddedCacheManager embeddedCacheManager;
+
+    embeddedCacheManager.createCache("movieCache", new ConfigurationBuilder().build());
+    movieCache = embeddedCacheManager.getCache("movieCache");
+    embeddedCacheManager.createCache("cartCache", new ConfigurationBuilder().build());
+    cartCache = embeddedCacheManager.getCache("cartCache");
+```

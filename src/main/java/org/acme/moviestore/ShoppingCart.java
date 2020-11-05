@@ -2,6 +2,7 @@ package org.acme.moviestore;
 
 import org.acme.data.MovieCart;
 import org.acme.data.MovieCartItem;
+import org.acme.data.MovieItem;
 import org.acme.mvc.pages.HomePage;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -46,15 +48,18 @@ public class ShoppingCart {
                 movieCart = new MovieCart();
                 movieCart.setOrderId(UUID.randomUUID().toString());
             }
-
-            Map<String, Integer> movieItems = movieCart.getMovieItems();
-
-            if (movieItems.containsKey(movieId)) {
-                movieItems.replace(movieId, qty);
-            } else {
-                movieItems.put(movieId, qty);
+            Map<String, Integer> localMovies = new HashMap<>();
+            List<MovieItem> movieItems = movieCart.getMovieItems();
+            movieItems.stream().forEach(movieItem -> {
+                if (movieItem.getId().equals(movieId)) {
+                    movieItem.setCount(qty);
+                }
+                localMovies.put(movieItem.getId(), movieItem.getCount());
+            });
+            if (!localMovies.containsKey(movieId)) {
+                movieItems.add(new MovieItem(movieId, qty));
             }
-
+            //movieCart.setMovieItems(movieItems);
             DBHelper.getCartCache().put(sessionId, movieCart);
             log.info("Movie Cart:{}", movieCart);
         }

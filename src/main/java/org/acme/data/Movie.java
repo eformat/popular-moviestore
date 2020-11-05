@@ -1,15 +1,15 @@
 package org.acme.data;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import org.infinispan.protostream.annotations.ProtoFactory;
+import org.infinispan.protostream.annotations.ProtoField;
 
-import java.io.Serializable;
+import javax.json.bind.annotation.JsonbProperty;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
-@JsonIgnoreProperties("popularity")
-public class Movie implements Serializable {
+public class Movie {
     private String id;
     private String posterPath;
     private String logoPath;
@@ -29,7 +29,8 @@ public class Movie implements Serializable {
     public Movie() {
     }
 
-    public Movie(String id, String posterPath, String logoPath, String overview, String title, float popularity, boolean adult, int[] genreIds, String originalLanguage, String originalTitle, Date releaseDate, boolean video, int voteCount) {
+    @ProtoFactory
+    public Movie(String id, String posterPath, String logoPath, String overview, String title, float popularity, boolean adult, int[] genreIds, String originalLanguage, String originalTitle, boolean video, int voteCount) {
         this.id = id;
         this.posterPath = posterPath;
         this.logoPath = logoPath;
@@ -40,7 +41,6 @@ public class Movie implements Serializable {
         this.genreIds = genreIds;
         this.originalLanguage = originalLanguage;
         this.originalTitle = originalTitle;
-        this.releaseDate = releaseDate;
         this.video = video;
         this.voteCount = voteCount;
     }
@@ -54,6 +54,7 @@ public class Movie implements Serializable {
         this.popularity = popularity;
     }
 
+    @ProtoField(number = 1)
     public String getId() {
         return id;
     }
@@ -62,24 +63,27 @@ public class Movie implements Serializable {
         this.id = id;
     }
 
+    @ProtoField(number = 2)
     public String getPosterPath() {
         return posterPath;
     }
 
-    @JsonSetter("poster_path")
+    @JsonbProperty("poster_path")
     public void setPosterPath(String posterPath) {
         this.posterPath = "http://image.tmdb.org/t/p/w92" + posterPath;
     }
 
+    @ProtoField(number = 3)
     public String getLogoPath() {
         return logoPath;
     }
 
-    @JsonSetter("backdrop_path")
+    @JsonbProperty("backdrop_path")
     public void setLogoPath(String logoPath) {
         this.logoPath = "http://image.tmdb.org/t/p/w45" + logoPath;
     }
 
+    @ProtoField(number = 4)
     public String getOverview() {
         return overview;
     }
@@ -88,6 +92,7 @@ public class Movie implements Serializable {
         this.overview = overview;
     }
 
+    @ProtoField(number = 5)
     public String getTitle() {
         return title;
     }
@@ -96,11 +101,12 @@ public class Movie implements Serializable {
         this.title = title;
     }
 
+    @ProtoField(number = 6, defaultValue = "0.0f")
     public float getPopularity() {
         return popularity;
     }
 
-    @JsonSetter("vote_average")
+    @JsonbProperty("vote_average")
     public void setPopularity(float popularity) {
         this.popularity = popularity;
     }
@@ -113,6 +119,7 @@ public class Movie implements Serializable {
         this.price = price;
     }
 
+    @ProtoField(number = 7, defaultValue = "false")
     public boolean isAdult() {
         return adult;
     }
@@ -121,29 +128,32 @@ public class Movie implements Serializable {
         this.adult = adult;
     }
 
+    @ProtoField(number = 8)
     public int[] getGenreIds() {
         return genreIds;
     }
 
-    @JsonSetter("genre_ids")
+    @JsonbProperty("genre_ids")
     public void setGenreIds(int[] genreIds) {
         this.genreIds = genreIds;
     }
 
+    @ProtoField(number = 9)
     public String getOriginalLanguage() {
         return originalLanguage;
     }
 
-    @JsonSetter("original_language")
+    @JsonbProperty("original_language")
     public void setOriginalLanguage(String originalLanguage) {
         this.originalLanguage = originalLanguage;
     }
 
+    @ProtoField(number = 10)
     public String getOriginalTitle() {
         return originalTitle;
     }
 
-    @JsonSetter("original_title")
+    @JsonbProperty("original_title")
     public void setOriginalTitle(String originalTitle) {
         this.originalTitle = originalTitle;
     }
@@ -152,11 +162,12 @@ public class Movie implements Serializable {
         return releaseDate;
     }
 
-    @JsonSetter("release_date")
+    @JsonbProperty("release_date")
     public void setReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
     }
 
+    @ProtoField(number = 11, defaultValue = "false")
     public boolean isVideo() {
         return video;
     }
@@ -165,11 +176,12 @@ public class Movie implements Serializable {
         this.video = video;
     }
 
+    @ProtoField(number = 12, defaultValue = "0")
     public int getVoteCount() {
         return voteCount;
     }
 
-    @JsonSetter("vote_count")
+    @JsonbProperty("vote_count")
     public void setVoteCount(int voteCount) {
         this.voteCount = voteCount;
     }
@@ -180,6 +192,33 @@ public class Movie implements Serializable {
                 "id='" + id + '\'' +
                 ", title='" + title + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Movie movie = (Movie) o;
+        return Float.compare(movie.popularity, popularity) == 0 &&
+                Double.compare(movie.price, price) == 0 &&
+                adult == movie.adult &&
+                video == movie.video &&
+                voteCount == movie.voteCount &&
+                id.equals(movie.id) &&
+                posterPath.equals(movie.posterPath) &&
+                logoPath.equals(movie.logoPath) &&
+                overview.equals(movie.overview) &&
+                title.equals(movie.title) &&
+                Arrays.equals(genreIds, movie.genreIds) &&
+                originalLanguage.equals(movie.originalLanguage) &&
+                originalTitle.equals(movie.originalTitle);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(id, posterPath, logoPath, overview, title, popularity, price, adult, originalLanguage, originalTitle, video, voteCount);
+        result = 31 * result + Arrays.hashCode(genreIds);
+        return result;
     }
 
     // @see com.acme.moviestore.TestMovies
@@ -195,7 +234,6 @@ public class Movie implements Serializable {
                 ",null" +
                 ",\"" + originalLanguage + '\"' +
                 ",\"" + originalTitle + '\"' +
-                ",null" +
                 "," + video +
                 "," + voteCount +
                 ")));";
