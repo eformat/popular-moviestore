@@ -10,6 +10,8 @@ services:
     environment:
       - USER=admin
       - PASS=admin
+    volumes:
+      - /tmp/ispn1:/opt/infinispan/server/data:Z
   infinispan2:
     image: quay.io/infinispan/server:11.0
     container_name: ispn2
@@ -21,15 +23,6 @@ services:
       - USER=admin
       - PASS=admin
       #JAVA_OPTS: "-b SITE_LOCAL -Djboss.socket.binding.port-offset=100 -Djboss.node.name=ispn2 -Djava.net.preferIPv4Stack=true -Djgroups.tcp.address=NON_LOOPBACK"
-
-#  jaegertracing:
-#    image: jaegertracing/all-in-one:latest
-#    container_name: jaeger
-#    hostname: jaeger
-#    ports:
-#      - 5775:5775
-#      - 6831:6831
-#      - 6832:6832
-#      - 5778:5778
-#      - 16686:16686
-#      - 14268:14268
+      # JAVA_OPTS="-Xms128m -Xmx1303m -Xss256k"
+    volumes:
+      - /tmp/ispn2:/opt/infinispan/server/data:Z

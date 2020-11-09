@@ -54,8 +54,20 @@ public class DBHelper {
     final String MOVIES = "movies";
     public final String MOVIE_STORE = "moviestore";
 
+    // segmented=true gives better performance but ulimit
+    private static final String SOFT_INDEX_FILESTORE = "<persistence passivation=\"false\"><soft-index-file-store xmlns=\"urn:infinispan:config:store:soft-index:11.0\" segmented=\"false\" fetch-state=\"true\" preload=\"true\" read-only=\"false\" purge=\"false\">" +
+            "<index path=\"cacheStore/index\" />" +
+            "<data path=\"cacheStore/data\" />" +
+//            "<write-behind />" +
+            "</soft-index-file-store></persistence>";
+
+    private static final String FILESTORE = "<persistence passivation=\"false\"><file-store fetch-state=\"true\" preload=\"true\" read-only=\"false\" purge=\"false\" path=\"cacheStore\" />" +
+            "</persistence>";
+
     private static final String DISTRIBUTED_CACHE_CONFIG = "<infinispan><cache-container>" +
-            "<distributed-cache name=\"%s\" mode=\"ASYNC\"/>" +
+            "<distributed-cache name=\"%s\" mode=\"ASYNC\">" +
+            FILESTORE +
+            "</distributed-cache>" +
             "</cache-container></infinispan>";
 
     //private Map<String, MovieCart> cartCache = new ConcurrentHashMap<>();
