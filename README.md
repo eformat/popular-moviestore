@@ -10,15 +10,18 @@ export API_KEY=<your api key>
 ```
 
 Run infinispan cluster locally
+
+cache file-store
 ```bash
-# cache file-store
 mkdir /tmp/ispn1 && chown -R 777 /tmp/ispn1
 mkdir /tmp/ispn2 && chown -R 777 /tmp/ispn2
-
-# run infinispan cluster
+```
+run infinispan cluster
+```bash
 podman-compose up -d
-
-# create a user
+```
+create an infinispan user
+```bash
 podman exec -it ispn1 /opt/infinispan/bin/cli.sh user create admin -p admin
 podman exec -it ispn2 /opt/infinispan/bin/cli.sh user create admin -p admin
 ```
