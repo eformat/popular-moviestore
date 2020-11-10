@@ -24,7 +24,6 @@ ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jb
 
 COPY target/lib/* /deployments/lib/
 COPY target/*-runner.jar /deployments/app.jar
-COPY target/classes/keystore.p12 /deployments/keystore.p12
 
 EXPOSE 8080
 USER 1001
