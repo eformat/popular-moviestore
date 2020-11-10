@@ -1,0 +1,9 @@
+route: true
+deploymentConfig: true
+replicas:
+  min: 2
+  max: 10
+image_repository: quay.io
+image_name: popular-moviestore
+image_namespace: eformat
+image_version: latest

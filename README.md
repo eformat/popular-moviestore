@@ -62,3 +62,32 @@ You can use the embedded infinispan cache if you dont want to run your own exter
     embeddedCacheManager.createCache("cartCache", new ConfigurationBuilder().build());
     cartCache = embeddedCacheManager.getCache("cartCache");
 ```
+
+## OpenShift
+
+Deploy infinispan cluster
+```bash
+
+```
+
+Create secret
+```bash
+oc new-project popular-moviestore
+
+cat <<EOF | oc apply -f -
+apiVersion: "v1"
+kind: "Secret"
+metadata:
+  name: "popular-moviestore"
+data:
+  API_KEY: "$(echo -n <moviestore apikey> | base64)"
+  INFINISPAN_REALM: "$(echo -n default | base64)"
+  INFINISPAN_USER: "$(echo -n developer | base64)"
+  INFINISPAN_PASSWORD: "$(echo -n $(oc exec infinispan-0 -- cat ./server/conf/users.properties | grep developer | awk -F'[=&]' '{print $2}') | base64)"
+EOF
+```
+
+Deploy application
+```bash
+helm template my -f chart/values.yaml chart | oc apply -n popular-moviestore -f-
+```

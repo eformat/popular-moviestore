@@ -1,0 +1,87 @@
+{{- if .Values.deploymentConfig }}
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: {{ include "popular-moviestore.fullname" . }}
+  labels:
+    {{- include "popular-moviestore.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas.min }}
+  revisionHistoryLimit: 10
+  selector:
+    {{- include "popular-moviestore.selectorLabels" . | nindent 4 }}
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: '/metrics'
+        prometheus.io/port: '8080'
+        rollme: {{ randAlphaNum 5 | quote }}
+      creationTimestamp: null
+      labels:
+        {{- include "popular-moviestore.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - env:
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: API_KEY
+                  name: popular-moviestore
+            - name: INFINISPAN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: INFINISPAN_PASSWORD
+                  name: popular-moviestore
+            - name: INFINISPAN_REALM
+              valueFrom:
+                secretKeyRef:
+                  key: INFINISPAN_REALM
+                  name: popular-moviestore
+            - name: INFINISPAN_USER
+              valueFrom:
+                secretKeyRef:
+                  key: INFINISPAN_USER
+                  name: popular-moviestore
+            - name: QUARKUS_PROFILE
+              value: prod
+          image: ''
+          imagePullPolicy: Always
+          name: {{ include "popular-moviestore.name" . }}
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+            - containerPort: 8443
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+          - {{ include "popular-moviestore.name" . }}
+        from:
+          kind: ImageStreamTag
+          name: {{ include "popular-moviestore.fullname" . }}:{{ .Values.image_version }}
+        lastTriggeredImage: ""
+      type: ImageChange
+{{- end }}
