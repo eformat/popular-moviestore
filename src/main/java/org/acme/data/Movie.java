@@ -3,9 +3,10 @@ package org.acme.data;
 import org.infinispan.protostream.annotations.ProtoFactory;
 import org.infinispan.protostream.annotations.ProtoField;
 
+import javax.json.bind.annotation.JsonbDateFormat;
 import javax.json.bind.annotation.JsonbProperty;
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -22,7 +23,7 @@ public class Movie {
     private int[] genreIds;
     private String originalLanguage;
     private String originalTitle;
-    private Date releaseDate;
+    private LocalDate releaseDate;
     private boolean video;
     private int voteCount;
 
@@ -158,12 +159,13 @@ public class Movie {
         this.originalTitle = originalTitle;
     }
 
-    public Date getReleaseDate() {
+    public LocalDate getReleaseDate() {
         return releaseDate;
     }
 
     @JsonbProperty("release_date")
-    public void setReleaseDate(Date releaseDate) {
+    @JsonbDateFormat(value = "yyyy-MM-dd")
+    public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
     }
 
