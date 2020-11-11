@@ -7,3 +7,4 @@ image_repository: quay.io
 image_name: popular-moviestore
 image_namespace: eformat
 image_version: latest
+keystore_password: password

@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "popular-moviestore.labels" . | nindent 4 }}
+  annotations:
+    service.beta.openshift.io/inject-cabundle : "true"
+    cert-utils-operator.redhat-cop.io/generate-java-truststore: "true"
+    cert-utils-operator.redhat-cop.io/source-ca-key: "service-ca.crt"
+    cert-utils-operator.redhat-cop.io/java-keystore-password: "{{ .Values.keystore_password }}"
+  name: java-truststore

@@ -68,19 +68,19 @@ spec:
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           volumeMounts:
-          - mountPath: /deployments/keystore.p12
-            name: datagrid-secret
-            subPath: keystore.p12
+          - mountPath: /deployments/truststore.jks
+            name: java-truststore
+            subPath: truststore.jks
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
       volumes:
-        - name: datagrid-secret
-          secret:
+        - configMap:
             defaultMode: 420
-            secretName: datagrid-secret
+            name: java-truststore
+          name: java-truststore
   test: false
   triggers:
     - type: ConfigChange
