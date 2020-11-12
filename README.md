@@ -2,6 +2,30 @@
 
 ![](/images/2020-11-04-18-26-59.png)
 
+## Prerequisites
+- helm3
+- gnu make
+- oc logged in as cluster-admin
+- ocp cluster 4+
+
+## For the impatient 🤠
+Deploy it ALL to OpenShift
+```bash
+make deploy-all
+```
+or with istio
+```bash
+make deploy-all-istio
+```
+And to remove
+```bash
+make undeploy-all
+```
+or for istio
+```bash
+make undeploy-all-istio
+```
+
 ## Running the application in dev mode locally
 
 (Optional) export your [moviedb](http://themoviedb.org/) apiKey, there are default test movies loaded if you dont have an account (its free!)
@@ -84,8 +108,7 @@ make deploy-certutil-operator
 
 Deploy application
 ```bash
-oc new-project popular-moviestore
-helm template my -f chart/values.yaml chart | oc apply -n popular-moviestore -f-
+make deploy-app
 ```
 
 Get the route URL for movies (browse here!)
@@ -123,8 +146,7 @@ make deploy-certutil-operator
 
 Deploy application
 ```bash
-oc new-project popular-moviestore
-helm template my -f chart/values.yaml chart --set istio.enabled=true | oc apply -n popular-moviestore -f-
+make deploy-app-istio
 ```
 
 Get the istio ingress gateay route URL for movies (browse here!)

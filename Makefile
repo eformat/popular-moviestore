@@ -49,6 +49,8 @@ $(eval cert_utils_chart_version := $(shell helm search repo cert-utils-operator/
 helm fetch cert-utils-operator/cert-utils-operator --version ${cert_utils_chart_version}
 helm template cert-utils-operator-${cert_utils_chart_version}.tgz --namespace cert-utils-operator | oc apply -f - -n cert-utils-operator
 rm -f cert-utils-operator-${cert_utils_chart_version}.tgz
+oc -n "${CERTUTILS_NAMESPACE}" wait --for condition=available --timeout=120s deployment/cert-utils-operator
+sleep 10
 endef
 
 define undeploy-certutil-operator
@@ -70,12 +72,12 @@ define deploy-infinispan-operator
 oc new-project "${INFINISPAN_NAMESPACE}" || true
 oc -n "${INFINISPAN_NAMESPACE}" apply -f ocp/infinispan-operatorgroup.yaml
 oc -n "${INFINISPAN_NAMESPACE}" apply -f ocp/infinispan-subscription.yaml
-sleep 10
+sleep 20
 oc -n "${INFINISPAN_NAMESPACE}" wait --for condition=available --timeout=120s deployment/infinispan-operator
 endef
 
 define undeploy-infinispan-operator
-$(eval csv := oc -n "$${INFINISPAN_NAMESPACE}" get subscription datagrid -o jsonpath='{.status.installedCSV}')
+$(eval csv := $(shell oc -n "$${INFINISPAN_NAMESPACE}" get subscription datagrid -o jsonpath='{.status.installedCSV}'))
 oc -n "${INFINISPAN_NAMESPACE}" delete -f ocp/infinispan-subscription.yaml || true
 oc -n "${INFINISPAN_NAMESPACE}" delete -f ocp/infinispan-operatorgroup.yaml || true
 oc -n "${INFINISPAN_NAMESPACE}" delete csv ${csv} || true
@@ -89,8 +91,8 @@ oc -n "${INFINISPAN_NAMESPACE}" apply -f ocp/infinispan-cr.yaml
 endef
 
 define undeploy-infinispan
-oc -n "${INFINISPAN_NAMESPACE}" delete -f ocp/infinispan-auth-secret.yaml || true
 oc -n "${INFINISPAN_NAMESPACE}" delete -f ocp/infinispan-cr.yaml || true
+oc -n "${INFINISPAN_NAMESPACE}" delete -f ocp/infinispan-auth-secret.yaml || true
 endef
 
 deploy-infinispan-operator:
@@ -152,3 +154,56 @@ deploy-istio-mesh:
 
 undeploy-istio-mesh:
 	$(call undeploy-istio-mesh)
+
+
+define deploy-app
+oc new-project popular-moviestore
+helm template my -f chart/values.yaml chart | oc apply -n popular-moviestore -f-
+endef
+
+define undeploy-app
+helm template my -f chart/values.yaml chart | oc delete -n popular-moviestore -f- || true
+oc delete project popular-moviestore || true
+endef
+
+define deploy-app-istio
+oc new-project popular-moviestore
+helm template my -f chart/values.yaml chart --set istio.enabled=true | oc apply -n popular-moviestore -f-
+endef
+
+define undeploy-app-istio
+helm template my -f chart/values.yaml chart --set istio.enabled=true | oc delete -n popular-moviestore -f- || true
+oc delete project popular-moviestore || true
+endef
+
+deploy-all:
+	$(call deploy-infinispan-operator)
+	$(call deploy-infinispan)
+	$(call deploy-certutil-operator)
+	$(call deploy-app)
+
+undeploy-all:
+	$(call undeploy-app)
+	$(call undeploy-certutil-operator)
+	$(call undeploy-infinispan)
+	$(call undeploy-infinispan-operator)
+
+deploy-all-istio:
+	$(call deploy-istio-control-plane)
+	$(call deploy-istio-mesh)
+	$(call deploy-infinispan-operator)
+	$(call deploy-infinispan)
+	$(call deploy-certutil-operator)
+	$(call deploy-app-istio)
+
+undeploy-all-istio:
+	$(call undeploy-app-istio)
+	$(call undeploy-certutil-operator)
+	$(call undeploy-infinispan)
+	$(call undeploy-infinispan-operator)
+	$(call undeploy-istio-mesh)
+	$(call undeploy-istio-control-plane)
+
+
+
+
