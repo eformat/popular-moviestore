@@ -8,3 +8,6 @@ image_name: popular-moviestore
 image_namespace: eformat
 image_version: latest
 keystore_password: password
+istio:
+  enabled: false
+  mtls: true

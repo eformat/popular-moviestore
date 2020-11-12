@@ -1,0 +1,41 @@
+---
+apiVersion: maistra.io/v2
+kind: ServiceMeshControlPlane
+metadata:
+  name: my-mesh
+spec:
+  version: v2.0
+  security:
+    dataPlane:
+      mtls: true
+      automtls: true
+    controlPlane:
+      mtls: true
+  tracing:
+    # change to None to disable tracing, 100% for all traces
+    type: Jaeger
+    sampling: 100.0
+  addons:
+    jaeger:
+      name: jaeger
+      # we want maistra to create the jaeger resource
+      install: {}
+    grafana:
+      enabled: true
+      install: {}
+    kiali:
+      name: kiali
+      enabled: true
+      # we want maistra to create the kiali resource
+      install: {}
+    prometheus:
+      enabled: true
+---
+apiVersion: maistra.io/v1
+kind: ServiceMeshMemberRoll
+metadata:
+  name: default
+spec:
+  members:
+    # a list of namespaces that should be joined into the service mesh
+    - popular-moviestore

@@ -1,0 +1,16 @@
+---
+apiVersion: infinispan.org/v1
+kind: Infinispan
+metadata:
+  name: infinispan
+spec:
+  replicas: 2
+  service:
+    type: DataGrid
+    sites:
+      local:
+        name: cloud
+        expose:
+          type: LoadBalancer
+  security:
+    endpointSecretName: connect-secret

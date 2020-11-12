@@ -2,7 +2,7 @@
 
 ![](/images/2020-11-04-18-26-59.png)
 
-## Running the application in dev mode
+## Running the application in dev mode locally
 
 (Optional) export your [moviedb](http://themoviedb.org/) apiKey, there are default test movies loaded if you dont have an account (its free!)
 ```bash
@@ -46,8 +46,7 @@ The application is now runnable using `java -jar target/popular-moviestore-1.0-S
 
 ## Embedded infinispan cache during development
 
-You can use the embedded infinispan cache if you dont want to run your own external infinispan instance:
-
+You can try the embedded infinispan cache if you dont want to run your own external infinispan instance
 ```xml
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -68,40 +67,93 @@ You can use the embedded infinispan cache if you dont want to run your own exter
 
 ## OpenShift
 
-Deploy infinispan cluster
-```bash
+As cluster-admin user, requires:
+- oc client logged in to cluster
+- helm3
 
+Deploy infinispan operator and cluster
+```bash
+make deploy-infinispan-operator
+make deploy-infinispan
 ```
 
 Deploy cert-utils operator (cluster scope)
 ```bash
-oc new-project cert-utils-operator
-helm repo add cert-utils-operator https://redhat-cop.github.io/cert-utils-operator
-helm repo update
-export cert_utils_chart_version=$(helm search repo cert-utils-operator/cert-utils-operator | grep cert-utils-operator/cert-utils-operator | awk '{print $2}')
-helm fetch cert-utils-operator/cert-utils-operator --version ${cert_utils_chart_version}
-helm template cert-utils-operator-${cert_utils_chart_version}.tgz --namespace cert-utils-operator | oc apply -f - -n cert-utils-operator
-rm cert-utils-operator-${cert_utils_chart_version}.tgz
-```
-
-Create secret
-```bash
-oc new-project popular-moviestore
-
-cat <<EOF | oc apply -f -
-apiVersion: "v1"
-kind: "Secret"
-metadata:
-  name: "popular-moviestore"
-data:
-  API_KEY: "$(echo -n <moviestore apikey> | base64)"
-  INFINISPAN_REALM: "$(echo -n default | base64)"
-  INFINISPAN_USER: "$(echo -n developer | base64)"
-  INFINISPAN_PASSWORD: "$(echo -n $(oc exec infinispan-0 -- cat ./server/conf/users.properties | grep developer | awk -F'[=&]' '{print $2}') | base64)"
-EOF
+make deploy-certutil-operator
 ```
 
 Deploy application
 ```bash
+oc new-project popular-moviestore
 helm template my -f chart/values.yaml chart | oc apply -n popular-moviestore -f-
+```
+
+Get the route URL for movies (browse here!)
+```bash
+chrome $(oc get route -l app.kubernetes.io/name=popular-moviestore -o custom-columns=ROUTE:.spec.host --no-headers)
+```
+
+Delete everything
+```bash
+helm template my -f chart/values.yaml chart | oc delete -n popular-moviestore -f-
+oc delete project popular-moviestore
+make undeploy-certutil-operator
+make undeploy-infinispan
+make undeploy-infinispan-operator
+```
+
+### (Optional) Add Istio into the mix
+
+Deploy Istio control plane
+```bash
+make deploy-istio-control-plane
+```
+
+Deploy Istio service mesh
+```bash
+make deploy-istio-mesh
+```
+
+Deploy infnispan, cert-uitl operatrs which are external to the mesh controlled project
+```bash
+make deploy-infinispan-operator
+make deploy-infinispan
+make deploy-certutil-operator
+```
+
+Deploy application
+```bash
+oc new-project popular-moviestore
+helm template my -f chart/values.yaml chart --set istio.enabled=true | oc apply -n popular-moviestore -f-
+```
+
+Get the istio ingress gateay route URL for movies (browse here!)
+```bash
+chrome $(oc get route -l maistra.io/gateway-name=movies -n istio-system -o custom-columns=ROUTE:.spec.host --no-headers)
+```
+
+Delete everything
+```bash
+helm template my -f chart/values.yaml chart --set istio.enabled=true | oc delete -n popular-moviestore -f-
+oc delete project popular-moviestore
+make undeploy-certutil-operator
+make undeploy-infinispan
+make undeploy-infinispan-operator
+make undeploy-istio-mesh
+make undeploy-istio-control-plane
+```
+
+## FIXME
+
+Istio in OpenShift does not yet seem to supprot SDS (Secret Discovery Service) - so you have to add this into the istio route manually for tls to work. The certificates are the same bound into the default ingress router.
+```yaml
+  tls:
+    certificate: |-
+      -----BEGIN CERTIFICATE-----
+      -----END CERTIFICATE-----
+    insecureEdgeTerminationPolicy: Redirect
+    key: |-
+      -----BEGIN RSA PRIVATE KEY-----
+      -----END RSA PRIVATE KEY-----
+    termination: edge
 ```

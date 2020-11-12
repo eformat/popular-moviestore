@@ -1,0 +1,52 @@
+{{- if .Values.istio.enabled }}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: movies
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "popular-moviestore.fullname" . }}-gateway
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - movies
+  http:
+    - route:
+        - destination:
+            host: {{ include "popular-moviestore.fullname" . }}
+            port:
+              number: 8080
+          subset: v1
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: {{ include "popular-moviestore.fullname" . }}
+spec:
+  host: {{ include "popular-moviestore.fullname" . }}
+  trafficPolicy:
+    {{- if .Values.istio.mtls }}
+    tls:
+      mode: ISTIO_MUTUAL
+    {{- end }}
+    loadBalancer:
+      simple: LEAST_CONN
+  subsets:
+    - name: v1
+      labels:
+        app.kubernetes.io/version: {{ .Chart.AppVersion }}
+{{- end }}

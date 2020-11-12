@@ -28,9 +28,12 @@ spec:
         prometheus.io/path: '/metrics'
         prometheus.io/port: '8080'
         rollme: {{ randAlphaNum 5 | quote }}
+        {{- if .Values.istio.enabled }}
+        sidecar.istio.io/inject: "true"
+        {{- end}}
       creationTimestamp: null
       labels:
-        {{- include "popular-moviestore.selectorLabels" . | nindent 8 }}
+        {{- include "popular-moviestore.labels" . | nindent 8 }}
     spec:
       containers:
         - env:
@@ -38,22 +41,32 @@ spec:
               valueFrom:
                 secretKeyRef:
                   key: API_KEY
-                  name: popular-moviestore
+                  name: {{ include "popular-moviestore.fullname" . }}
+            - name: INFINISPAN_SERVICE_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: INFINISPAN_SERVICE_HOST
+                  name: {{ include "popular-moviestore.fullname" . }}
+            - name: INFINISPAN_SERVICE_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: INFINISPAN_SERVICE_PORT
+                  name: {{ include "popular-moviestore.fullname" . }}
             - name: INFINISPAN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: INFINISPAN_PASSWORD
-                  name: popular-moviestore
+                  name: {{ include "popular-moviestore.fullname" . }}
             - name: INFINISPAN_REALM
               valueFrom:
                 secretKeyRef:
                   key: INFINISPAN_REALM
-                  name: popular-moviestore
+                  name: {{ include "popular-moviestore.fullname" . }}
             - name: INFINISPAN_USER
               valueFrom:
                 secretKeyRef:
                   key: INFINISPAN_USER
-                  name: popular-moviestore
+                  name: {{ include "popular-moviestore.fullname" . }}
             - name: QUARKUS_PROFILE
               value: prod
           image: ''
