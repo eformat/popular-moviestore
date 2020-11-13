@@ -167,7 +167,8 @@ make undeploy-istio-control-plane
 
 ## FIXME
 
-Istio in OpenShift does not yet seem to supprot SDS (Secret Discovery Service) - so you have to add this into the istio route manually for tls to work. The certificates are the same bound into the default ingress router.
+### TLS Istio ingress route
+- Istio in OpenShift does not yet seem to supprot SDS (Secret Discovery Service) - so you have to add this into the istio route manually for tls to work. The certificates are the same bound into the default ingress router.
 ```yaml
   tls:
     certificate: |-
@@ -178,4 +179,10 @@ Istio in OpenShift does not yet seem to supprot SDS (Secret Discovery Service) -
       -----BEGIN RSA PRIVATE KEY-----
       -----END RSA PRIVATE KEY-----
     termination: edge
+```
+
+### excludeOutboundPorts
+- Why does this not work by itself for infinispan in istio?
+```yaml
+        traffic.sidecar.istio.io/excludeOutboundPorts: "11222"
 ```

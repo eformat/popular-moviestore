@@ -65,7 +65,7 @@ undeploy-certutil-operator:
 	$(call undeploy-certutil-operator)
 
 #Infinispan
-INFINISPAN_NAMESPACE ?= datagrid
+INFINISPAN_NAMESPACE ?= popular-moviestore
 
 # Datagrid using OLM
 define deploy-infinispan-operator
@@ -157,7 +157,7 @@ undeploy-istio-mesh:
 
 
 define deploy-app
-oc new-project popular-moviestore
+oc new-project popular-moviestore || true
 helm template my -f chart/values.yaml chart | oc apply -n popular-moviestore -f-
 endef
 
@@ -167,7 +167,7 @@ oc delete project popular-moviestore || true
 endef
 
 define deploy-app-istio
-oc new-project popular-moviestore
+oc new-project popular-moviestore || true
 helm template my -f chart/values.yaml chart --set istio.enabled=true | oc apply -n popular-moviestore -f-
 endef
 
@@ -176,6 +176,19 @@ helm template my -f chart/values.yaml chart --set istio.enabled=true | oc delete
 oc delete project popular-moviestore || true
 endef
 
+deploy-app:
+	$(call deploy-app)
+
+deploy-app-istio:
+	$(call deploy-app-istio)
+
+undeploy-app:
+	$(call undeploy-app)
+
+undeploy-app-istio:
+	$(call undeploy-app-istio)
+
+# All targets
 deploy-all:
 	$(call deploy-infinispan-operator)
 	$(call deploy-infinispan)

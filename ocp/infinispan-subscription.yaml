@@ -5,7 +5,6 @@ metadata:
   labels:
     operators.coreos.com/datagrid.popular-moviestore: ""
   name: datagrid
-  namespace: datagrid
 spec:
   channel: 8.1.x
   installPlanApproval: Automatic

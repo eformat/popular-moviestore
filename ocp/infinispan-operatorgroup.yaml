@@ -6,7 +6,6 @@ metadata:
     olm.providedAPIs: Cache.v2alpha1.infinispan.org,Infinispan.v1.infinispan.org
   generateName: datagrid-
   name: datagrid-vvwql
-  namespace: datagrid
 spec:
   targetNamespaces:
-    - datagrid
+    - popular-moviestore

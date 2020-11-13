@@ -30,6 +30,7 @@ spec:
         rollme: {{ randAlphaNum 5 | quote }}
         {{- if .Values.istio.enabled }}
         sidecar.istio.io/inject: "true"
+        traffic.sidecar.istio.io/excludeOutboundPorts: "11222"
         {{- end}}
       creationTimestamp: null
       labels:

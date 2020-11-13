@@ -33,6 +33,45 @@ spec:
           subset: v1
 ---
 apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: infinispan
+spec:
+  hosts:
+    - infinispan.popular-moviestore.svc.cluster.local
+    - infinispan
+  exportTo:
+    - "."
+  gateways:
+    - mesh
+  tcp:
+    - match:
+        - port: 11222
+          gateways:
+            - mesh
+      route:
+        - destination:
+            host: infinispan.popular-moviestore.svc.cluster.local
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: infinispan
+spec:
+  hosts:
+    - infinispan.popular-moviestore.svc.cluster.local
+  exportTo:
+    - "."
+  ports:
+    - number: 11222
+      name: tcp-infinispan
+      protocol: TCP
+  location: MESH_INTERNAL
+  resolution: DNS
+  endpoints:
+    - address: infinispan.popular-moviestore.svc.cluster.local
+---
+apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: {{ include "popular-moviestore.fullname" . }}
