@@ -72,7 +72,7 @@ define deploy-infinispan-operator
 oc new-project "${INFINISPAN_NAMESPACE}" || true
 oc -n "${INFINISPAN_NAMESPACE}" apply -f ocp/infinispan-operatorgroup.yaml
 oc -n "${INFINISPAN_NAMESPACE}" apply -f ocp/infinispan-subscription.yaml
-sleep 20
+sleep 60
 oc -n "${INFINISPAN_NAMESPACE}" wait --for condition=available --timeout=120s deployment/infinispan-operator
 endef
 
@@ -116,7 +116,7 @@ oc new-project "${ISTIO_NAMESPACE}" || true
 oc apply -f ocp/kiali-subscription.yaml
 oc apply -f ocp/jaeger-subscription.yaml
 oc apply -f ocp/istio-subscription.yaml
-sleep 20
+sleep 60
 oc -n openshift-operators wait --for condition=available --timeout=200s deployment/istio-operator
 endef
 

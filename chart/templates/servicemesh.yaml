@@ -88,4 +88,20 @@ spec:
     - name: v1
       labels:
         app.kubernetes.io/version: {{ .Chart.AppVersion }}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: infinispan
+spec:
+  host: infinispan.popular-moviestore.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+    loadBalancer:
+      simple: LEAST_CONN
+  subsets:
+    - name: v1
+      labels:
+        app.kubernetes.io/version: {{ .Chart.AppVersion }}
 {{- end }}
