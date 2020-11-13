@@ -2,6 +2,12 @@
 
 ![](/images/2020-11-04-18-26-59.png)
 
+Moviestore application demonstrating:
+- quarkus application using thymeleaf, vertx for web interface
+- datagrid cluster with write-through file persistent store for movies and shopping basket cache (when all apps stopped/restarted)
+- openshift 4+ deployment using helm
+- istio configuration (optional)
+
 ## Prerequisites
 - helm3
 - gnu make
