@@ -11,3 +11,4 @@ keystore_password: password
 istio:
   enabled: false
   mtls: true
+  domain: apps.hivec.sandbox209.opentlc.com

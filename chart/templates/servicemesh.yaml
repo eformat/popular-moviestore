@@ -3,7 +3,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: movies
+  name: {{ include "popular-moviestore.fullname" . }}
 spec:
   selector:
     istio: ingressgateway
@@ -13,17 +13,17 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - "*"
+        - {{ include "popular-moviestore.fullname" . }}.{{ .Values.istio.domain }}
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ include "popular-moviestore.fullname" . }}-gateway
+  name: {{ include "popular-moviestore.fullname" . }}
 spec:
   hosts:
-    - "*"
+    - {{ include "popular-moviestore.fullname" . }}.{{ .Values.istio.domain }}
   gateways:
-    - movies
+    - {{ include "popular-moviestore.fullname" . }}
   http:
     - route:
         - destination:
