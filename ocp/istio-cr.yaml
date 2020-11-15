@@ -12,22 +12,18 @@ spec:
     controlPlane:
       mtls: true
   tracing:
-    # change to None to disable tracing, 100% for all traces
     type: Jaeger
-    sampling: 100.0
   addons:
     jaeger:
       name: jaeger
-      # we want maistra to create the jaeger resource
-      install: {}
+      install:
+        storage:
+          type: Memory
     grafana:
       enabled: true
-      install: {}
     kiali:
       name: kiali
       enabled: true
-      # we want maistra to create the kiali resource
-      install: {}
     prometheus:
       enabled: true
 ---
@@ -39,3 +35,4 @@ spec:
   members:
     # a list of namespaces that should be joined into the service mesh
     - popular-moviestore
+    - pet-battle
