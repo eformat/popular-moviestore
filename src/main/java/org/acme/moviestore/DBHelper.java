@@ -55,7 +55,7 @@ public class DBHelper {
     public final String MOVIE_STORE = "moviestore";
 
     private static final String FILESTORE = "<persistence passivation=\"false\">" +
-            "<file-store fetch-state=\"true\" preload=\"true\" read-only=\"false\" purge=\"false\" path=\"cacheStore\" />" +
+            "<file-store preload=\"true\" read-only=\"false\" purge=\"false\" path=\"cacheStore\" />" +
             "</persistence>";
 
     private static final String DISTRIBUTED_CACHE_CONFIG = "<infinispan><cache-container>" +

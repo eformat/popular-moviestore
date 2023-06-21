@@ -5,7 +5,7 @@ metadata:
   annotations:
     olm.providedAPIs: Cache.v2alpha1.infinispan.org,Infinispan.v1.infinispan.org
   generateName: datagrid-
-  name: datagrid-vvwql
+  name: datagrid-og
 spec:
   targetNamespaces:
     - popular-moviestore

@@ -1,20 +1,28 @@
 version: '3'
 services:
   infinispan1:
-    image: quay.io/infinispan/server:11.0
+    image: quay.io/infinispan/server:14.0
     container_name: ispn1
     hostname: ispn1
-    command: /opt/infinispan/bin/server.sh -Djboss.node.name=ispn1 -Djava.net.preferIPv4Stack=true -Djgroups.gossip.initial_hosts=0.0.0.0[7801],0.0.0.0[7800] # -Djgroups.tcp.address=NON_LOOPBACK  -Djboss.default.jgroups.stack=tcp
+    command: -Djboss.node.name=ispn1 -Djava.net.preferIPv4Stack=true -Djgroups.gossip.initial_hosts=0.0.0.0[7801],0.0.0.0[7800]
     ports:
       - 11222:11222
     volumes:
       - /tmp/ispn1:/opt/infinispan/server/data:Z
+    network_mode: host
+    environment:
+      - USER=admin
+      - PASS=admin
   infinispan2:
-    image: quay.io/infinispan/server:11.0
+    image: quay.io/infinispan/server:14.0
     container_name: ispn2
     hostname: ispn2
-    command: /opt/infinispan/bin/server.sh -Dinfinispan.socket.binding.port-offset=100 -Djboss.node.name=ispn2 -Djava.net.preferIPv4Stack=true -Djgroups.gossip.initial_hosts=0.0.0.0[7801],0.0.0.0[7800] # -Djgroups.tcp.address=NON_LOOPBACK -Djboss.default.jgroups.stack=tcp
+    command: -Dinfinispan.socket.binding.port-offset=100 -Djboss.node.name=ispn2 -Djava.net.preferIPv4Stack=true -Djgroups.gossip.initial_hosts=0.0.0.0[7801],0.0.0.0[7800]
     ports:
       - 11322:11322
     volumes:
       - /tmp/ispn2:/opt/infinispan/server/data:Z
+    network_mode: host
+    environment:
+      - USER=admin
+      - PASS=admin

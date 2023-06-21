@@ -1,0 +1,10 @@
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  generateName: cert-utils-operator-
+  generation: 1
+  name: cert-utils-operator
+  namespace: cert-utils-operator
+spec:
+  upgradeStrategy: Default

@@ -43,18 +43,13 @@ CERTUTILS_NAMESPACE ?= cert-utils-operator
 
 define deploy-certutil-operator
 oc new-project "${CERTUTILS_NAMESPACE}" || true
-helm repo add cert-utils-operator https://redhat-cop.github.io/cert-utils-operator
-helm repo update
-$(eval cert_utils_chart_version := $(shell helm search repo cert-utils-operator/cert-utils-operator | grep cert-utils-operator/cert-utils-operator | awk '{print $$2}'))
-helm fetch cert-utils-operator/cert-utils-operator --version ${cert_utils_chart_version}
-helm template cert-utils-operator-${cert_utils_chart_version}.tgz --namespace cert-utils-operator | oc apply -f - -n cert-utils-operator
-rm -f cert-utils-operator-${cert_utils_chart_version}.tgz
-oc -n "${CERTUTILS_NAMESPACE}" wait --for condition=available --timeout=120s deployment/cert-utils-operator
-sleep 10
+oc -n "${CERTUTILS_NAMESPACE}" apply -f ocp/cert-utils-operatorgroup.yaml
+oc -n "${CERTUTILS_NAMESPACE}" apply -f ocp/cert-utils-subscription.yaml
+sleep 60
+oc -n "${CERTUTILS_NAMESPACE}" wait --for condition=available --timeout=120s deployment.apps/cert-utils-operator-controller-manager
 endef
 
 define undeploy-certutil-operator
-oc delete project "${CERTUTILS_NAMESPACE}" || true
 oc delete project "${CERTUTILS_NAMESPACE}" || true
 endef
 
@@ -73,7 +68,7 @@ oc new-project "${INFINISPAN_NAMESPACE}" || true
 oc -n "${INFINISPAN_NAMESPACE}" apply -f ocp/infinispan-operatorgroup.yaml
 oc -n "${INFINISPAN_NAMESPACE}" apply -f ocp/infinispan-subscription.yaml
 sleep 60
-oc -n "${INFINISPAN_NAMESPACE}" wait --for condition=available --timeout=120s deployment/infinispan-operator
+oc -n "${INFINISPAN_NAMESPACE}" wait --for condition=available --timeout=120s deployment.apps/infinispan-operator-controller-manager
 endef
 
 define undeploy-infinispan-operator
