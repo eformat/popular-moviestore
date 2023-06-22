@@ -50,11 +50,6 @@ run infinispan cluster
 ```bash
 podman-compose up -d
 ```
-create an infinispan user
-```bash
-podman exec -it ispn1 /opt/infinispan/bin/cli.sh user create admin -p admin
-podman exec -it ispn2 /opt/infinispan/bin/cli.sh user create admin -p admin
-```
 
 You can run your application in dev mode that enables live coding using:
 ```bash
