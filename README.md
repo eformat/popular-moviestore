@@ -43,8 +43,8 @@ Run infinispan cluster locally
 
 cache file-store
 ```bash
-mkdir /tmp/ispn1 && chown -R 777 /tmp/ispn1
-mkdir /tmp/ispn2 && chown -R 777 /tmp/ispn2
+mkdir /tmp/ispn1 && chmod -R 777 /tmp/ispn1
+mkdir /tmp/ispn2 && chmod -R 777 /tmp/ispn2
 ```
 run infinispan cluster
 ```bash
